@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analyseur de Couleurs</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="shortcut icon" href="/favicon.ico" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <meta name="apple-mobile-web-app-title" content="Analyse de Couleurs" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            transition: background-color 1.2s ease;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            background: linear-gradient(135deg, #1b1b1b 0%, #292929 50%, #1f1f1f 100%);
+        }
+        
+        .container {
+            background: linear-gradient(135deg, #ffffff 0%, #d9d9d9 50%, #777777 100%);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.15);
+            max-width: 850px;
+            width: 100%;
+            text-align: center;
+            margin: 30px 0;
+        }
+        
+        h1 {
+            background: linear-gradient(45deg, #ff0080, #ff8fc7);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 25px;
+            font-size: 2.8rem;
+            font-weight: 700;
+        }
+        
+        .description {
+            color: #4e4e4e;
+            font-size: 1.2rem;
+            margin-bottom: 35px;
+            line-height: 1.6;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .color-display {
+            height: 720px;
+            border-radius: 15px;
+            margin: 30px 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: white;
+            text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.4);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            transition: all 0.5s ease;
+        }
+        
+        .color-info {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 25px;
+            margin: 35px 0;
+        }
+        
+        .info-box {
+            background-color: #292929;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+        
+        .info-box:hover {
+            transform: translateY(-5px);
+        }
+        
+        .info-title {
+            font-size: 0.9rem;
+            color: #fcfcfc;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+        
+        .info-value {
+            font-size: 1rem;
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+            color: #e2e2e2;
+        }
+        
+        .wavelength-info {
+            margin: 30px 0;
+            padding: 20px;
+            background: linear-gradient(to right, #ff3366, #ff7733, #ffcc33, #33cc33, #3399ff, #3366ff, #9933ff);
+            border-radius: 15px;
+            color: white;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.62);
+        }
+        
+        .wavelength-value {
+            font-size: 2rem;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin: 30px 0;
+            flex-wrap: wrap;
+        }
+        
+        button {
+            background: linear-gradient(135deg, #ff1489, #fe6db6);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        button:hover {
+            background: linear-gradient(135deg, #ff0080, #ff1489);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+        }
+        
+        button i {
+            font-size: 1.2rem;
+        }
+        
+        .instructions {
+            margin-top: 35px;
+            padding: 25px;
+            background-color: #292929;
+            border-radius: 15px;
+            text-align: left;
+        }
+        
+        .instructions h2 {
+            color: #ffffff;
+            margin-bottom: 15px;
+            font-size: 1.5rem;
+        }
+        
+        .instructions ul {
+            list-style-type: none;
+            padding-left: 20px;
+        }
+        
+        .instructions li {
+            margin-bottom: 12px;
+            color: #f1f1f1;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+        
+        .instructions li i {
+            color: #ff1489;
+            margin-top: 4px;
+        }
+        
+        footer {
+            margin-top: 40px;
+            color: #848484;
+            text-align: center;
+            font-size: 1rem;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 25px;
+            }
+            
+            h1 {
+                font-size: 2.2rem;
+            }
+            
+            .description {
+                font-size: 1.1rem;
+            }
+            
+            .color-info {
+                grid-template-columns: 1fr;
+            }
+            
+            .controls {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            button {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1><i class="fas fa-palette"></i> Analyseur de Couleurs</h1>
+        
+        <p class="description">
+            Cet outil génère aléatoirement une couleur du spectre visible à chaque chargement. 
+            Utilisez-le pour tester la perception des couleurs, l'étalonnage d'écrans et les études chromatiques.
+        </p>
+        
+        <div class="color-display" id="colorDisplay">
+            <span id="colorText">Chargement de la couleur...</span>
+        </div>
+        
+        <div class="color-info">
+            <div class="info-box">
+                <div class="info-title">Valeur HEX</div>
+                <div class="info-value" id="colorHex">#FFFFFF</div>
+            </div>
+            
+            <div class="info-box">
+                <div class="info-title">Valeur RGB</div>
+                <div class="info-value" id="colorRGB">rgb(255, 255, 255)</div>
+            </div>
+            
+            <div class="info-box">
+                <div class="info-title">Valeur HSL</div>
+                <div class="info-value" id="colorHSL">hsl(0, 0%, 100%)</div>
+            </div>
+        </div>
+        
+        <div class="wavelength-info">
+            <div class="info-title">Longueur d'onde approximative</div>
+            <div class="wavelength-value" id="wavelength">N/A</div>
+            <div class="info-title">dans le spectre visible</div>
+        </div>
+        
+        <div class="controls">
+            <button onclick="generateNewColor()">
+                <i class="fas fa-sync-alt"></i> Nouvelle couleur
+            </button>
+            <button onclick="copyToClipboard()">
+                <i class="fas fa-copy"></i> Copier la valeur HEX
+            </button>
+            <button onclick="lockColor()">
+                <i class="fas fa-lock"></i> Verrouiller la couleur
+            </button>
+        </div>
+        
+        <div class="instructions">
+            <h2><i class="fas fa-info-circle"></i> Instructions d'utilisation</h2>
+            <ul>
+                <li><i class="fas fa-check-circle"></i> Une nouvelle couleur est générée à chaque chargement de la page</li>
+                <li><i class="fas fa-check-circle"></i> Utilisez le bouton « Nouvelle couleur » pour générer une autre couleur aléatoire.</li>
+                <li><i class="fas fa-check-circle"></i> Verrouillez une couleur spécifique avec le bouton « Verrouiller la couleur ».</li>
+                <li><i class="fas fa-check-circle"></i> Copiez la valeur HEX pour l'utiliser dans vos projets.</li>
+                <li><i class="fas fa-check-circle"></i> Utilisez cet outil pour tester la perception des couleurs et l'étalonnage d'écran.</li>
+            </ul>
+        </div>
+    </div>
+    
+    <footer>
+        <p>Outil scientifique pour l'analyse des couleurs | Développé pour la recherche</p>
+    </footer>
+
+    <script>
+        let colorLocked = false;
+        let currentColor = null;
+        
+        // Fonction pour générer une couleur dans le spectre visible
+        function generateColor() {
+            if (colorLocked && currentColor) {
+                return currentColor;
+            }
+            
+            // Générer une teinte entre 0 et 360 (spectre HSL)
+            const hue = Math.floor(Math.random() * 361);
+            
+            // Pour des couleurs plus vives, on limite la saturation et la luminosité
+            // Saturation entre 70% et 100%
+            const saturation = Math.floor(Math.random() * 31) + 70;
+            
+            // Luminosité entre 40% et 60% pour des couleurs bien visibles
+            const lightness = Math.floor(Math.random() * 21) + 40;
+            
+            currentColor = { h: hue, s: saturation, l: lightness };
+            return currentColor;
+        }
+        
+        // Convertir HSL en RGB
+        function hslToRgb(h, s, l) {
+            h /= 360;
+            s /= 100;
+            l /= 100;
+            
+            let r, g, b;
+            
+            if (s === 0) {
+                r = g = b = l;
+            } else {
+                const hue2rgb = (p, q, t) => {
+                    if (t < 0) t += 1;
+                    if (t > 1) t -= 1;
+                    if (t < 1/6) return p + (q - p) * 6 * t;
+                    if (t < 1/2) return q;
+                    if (t < 2/3) return p + (q - p) * (2/3 - t) * 6;
+                    return p;
+                };
+                
+                const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+                const p = 2 * l - q;
+                
+                r = hue2rgb(p, q, h + 1/3);
+                g = hue2rgb(p, q, h);
+                b = hue2rgb(p, q, h - 1/3);
+            }
+            
+            return [
+                Math.round(r * 255),
+                Math.round(g * 255),
+                Math.round(b * 255)
+            ];
+        }
+        
+        // Convertir RGB en Hex
+        function rgbToHex(r, g, b) {
+            return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1).toUpperCase();
+        }
+        
+        // Calculer la longueur d'onde approximative à partir de la teinte
+        function calculateWavelength(hue) {
+            // Approximation: la teinte HSL 0° (rouge) correspond à ~700nm
+            // et la teinte 240° (bleu) correspond à ~400nm
+            return Math.round(700 - (hue / 240) * 300);
+        }
+        
+        // Appliquer une nouvelle couleur à la page
+        function applyNewColor() {
+            const color = generateColor();
+            const [r, g, b] = hslToRgb(color.h, color.s, color.l);
+            const hex = rgbToHex(r, g, b);
+            const hsl = `hsl(${color.h}, ${color.s}%, ${color.l}%)`;
+            const rgb = `rgb(${r}, ${g}, ${b})`;
+            
+            // Appliquer la couleur au fond de la page
+            document.body.style.backgroundColor = hex;
+            
+            // Mettre à jour l'affichage de la couleur
+            document.getElementById('colorDisplay').style.backgroundColor = hex;
+            document.getElementById('colorText').textContent = hex;
+            
+            // Mettre à jour les informations affichées
+            document.getElementById('colorHex').textContent = hex;
+            document.getElementById('colorRGB').textContent = rgb;
+            document.getElementById('colorHSL').textContent = hsl;
+            
+            // Calculer et afficher la longueur d'onde approximative
+            const wavelength = calculateWavelength(color.h);
+            document.getElementById('wavelength').textContent = `${wavelength} nm`;
+            
+            // Changer la couleur du texte en fonction de la luminosité
+            const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+            const textColor = brightness > 128 ? '#000000' : '#FFFFFF';
+            document.getElementById('colorText').style.color = textColor;
+        }
+        
+        // Fonction pour générer une nouvelle couleur
+        function generateNewColor() {
+            applyNewColor();
+        }
+        
+        // Fonction pour copier la valeur HEX dans le presse-papier
+        function copyToClipboard() {
+            const hexValue = document.getElementById('colorHex').textContent;
+            navigator.clipboard.writeText(hexValue).then(() => {
+                const originalText = document.querySelector('button i.fa-copy').parentNode.innerHTML;
+                document.querySelector('button i.fa-copy').parentNode.innerHTML = '<i class="fas fa-check"></i> Copié!';
+                
+                setTimeout(() => {
+                    document.querySelector('button i.fa-check').parentNode.innerHTML = originalText;
+                }, 2000);
+            });
+        }
+        
+        // Fonction pour verrouiller/déverrouiller la couleur actuelle
+        function lockColor() {
+            colorLocked = !colorLocked;
+            const lockButton = document.querySelector('button i.fa-lock, button i.fa-unlock').parentNode;
+            
+            if (colorLocked) {
+                lockButton.innerHTML = '<i class="fas fa-unlock"></i> Déverrouiller';
+            } else {
+                lockButton.innerHTML = '<i class="fas fa-lock"></i> Verrouiller';
+            }
+        }
+        
+        // Générer une couleur au chargement initial
+        window.onload = applyNewColor;
+    </script>
+</body>
+</html>
